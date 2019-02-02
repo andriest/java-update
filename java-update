@@ -1,0 +1,29 @@
+#!/bin/sh
+
+useJavaUsage() {
+    echo "Usage java-update VERSION"
+    echo 'Set the Oracle JDK version to use for the current session.'
+    echo ''
+    echo 'The VERSION is the JDK version to use such that'
+    echo 'the directory /opt/local/${VERSION}-current'
+    echo 'will be set as JAVA_HOME and the corresponding bin/'
+    echo 'directory will be added to the front of PATH.'
+}
+
+if [[ -z "$1" ]]; then
+    useJavaUsage
+    return -1
+fi
+
+local JVM_DIR="/opt/local/$1-current"
+if [[ -d ${JVM_DIR} ]]; then
+    echo "Setting session JDK to ${JVM_DIR}"
+    export JAVA_HOME=${JVM_DIR}
+    sudo update-alternatives --set java ${JVM_DIR}/bin/java
+    sudo update-alternatives --set javac ${JVM_DIR}/bin/javac
+    java -version
+else
+    echo "No Oracle JDK found at ${JVM_DIR}"
+    return -1
+fi
+
